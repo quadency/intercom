@@ -46,5 +46,8 @@ export class Intercom {
     setBottomPadding(options) {
         return IntercomPlugin.setBottomPadding(options);
     }
+    sendPushTokenToIntercom(options) {
+        return IntercomPlugin.sendPushTokenToIntercom(options);
+    }
 }
 //# sourceMappingURL=plugin.js.map

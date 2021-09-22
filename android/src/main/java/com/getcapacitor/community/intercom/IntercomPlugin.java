@@ -174,6 +174,15 @@ public class IntercomPlugin extends Plugin {
         call.success();
     }
 
+    @PluginMethod
+    public void sendPushTokenToIntercom(PluginCall call) {
+        String token = call.getString("value");
+        Intercom.client().sendTokenToIntercom(this.bridge.getActivity().getApplication(), token);
+        JSObject ret = new JSObject();
+        ret.put("token", token);
+        call.resolve();
+    }
+
     private static Map<String, Object> mapFromJSON(JSONObject jsonObject) {
         if (jsonObject == null) {
             return null;

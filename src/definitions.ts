@@ -23,6 +23,12 @@ export interface IntercomProtocol {
   hideInAppMessages(): Promise<void>;
   setUserHash(options: { hmac: string }): Promise<void>;
   setBottomPadding(options: { value: string }): Promise<void>;
+  /**
+   * Send push token to Intercom
+   *
+   * Only for Android
+   */
+  sendPushTokenToIntercom(options: RefreshedToken): Promise<void>;
 }
 
 export interface UserUpdateOptions {
@@ -32,4 +38,8 @@ export interface UserUpdateOptions {
   phone?: string;
   languageOverride?: string;
   customAttributes: { [key: string]: any };
+}
+
+export interface RefreshedToken {
+  value: string;
 }

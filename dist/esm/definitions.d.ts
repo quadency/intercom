@@ -31,6 +31,12 @@ export interface IntercomProtocol {
     setBottomPadding(options: {
         value: string;
     }): Promise<void>;
+    /**
+     * Send push token to Intercom
+     *
+     * Only for Android
+     */
+    sendPushTokenToIntercom(options: RefreshedToken): Promise<void>;
 }
 export interface UserUpdateOptions {
     userId?: string;
@@ -41,4 +47,7 @@ export interface UserUpdateOptions {
     customAttributes: {
         [key: string]: any;
     };
+}
+export interface RefreshedToken {
+    value: string;
 }

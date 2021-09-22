@@ -1,4 +1,4 @@
-import { IntercomProtocol, UserUpdateOptions } from './definitions';
+import { IntercomProtocol, RefreshedToken, UserUpdateOptions } from './definitions';
 export declare class Intercom implements IntercomProtocol {
     registerIdentifiedUser(options: {
         userId?: string;
@@ -27,4 +27,5 @@ export declare class Intercom implements IntercomProtocol {
     setBottomPadding(options: {
         value: string;
     }): Promise<void>;
+    sendPushTokenToIntercom(options: RefreshedToken): Promise<void>;
 }
