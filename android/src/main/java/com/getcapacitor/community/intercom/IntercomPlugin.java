@@ -1,5 +1,6 @@
 package com.getcapacitor.community.intercom;
 
+import com.getcapacitor.JSObject;
 import com.getcapacitor.NativePlugin;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -17,10 +18,12 @@ import java.util.Map;
 import io.intercom.android.sdk.Intercom;
 import io.intercom.android.sdk.UserAttributes;
 import io.intercom.android.sdk.identity.Registration;
+import io.intercom.android.sdk.push.IntercomPushClient;
 
 @NativePlugin()
 public class IntercomPlugin extends Plugin {
     public static final String CONFIG_KEY_PREFIX = "plugins.IntercomPlugin.android-";
+    private final IntercomPushClient intercomPushClient = new IntercomPushClient();
 
     @Override()
     public void load() {
@@ -177,10 +180,10 @@ public class IntercomPlugin extends Plugin {
     @PluginMethod
     public void sendPushTokenToIntercom(PluginCall call) {
         String token = call.getString("value");
-        Intercom.client().sendTokenToIntercom(this.bridge.getActivity().getApplication(), token);
+        intercomPushClient.sendTokenToIntercom(this.bridge.getActivity().getApplication(), token);
         JSObject ret = new JSObject();
         ret.put("token", token);
-        call.resolve();
+        call.success();
     }
 
     private static Map<String, Object> mapFromJSON(JSONObject jsonObject) {
