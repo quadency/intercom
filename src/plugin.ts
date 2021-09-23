@@ -1,5 +1,5 @@
 import { Plugins } from '@capacitor/core';
-import { IntercomProtocol, RefreshedToken, UserUpdateOptions } from './definitions';
+import { IntercomProtocol, PushNotificationSchema, RefreshedToken, UserUpdateOptions } from './definitions';
 
 const { IntercomPlugin } = Plugins;
 
@@ -71,4 +71,7 @@ export class Intercom implements IntercomProtocol {
     return IntercomPlugin.sendPushTokenToIntercom(options);
   }
 
+  receivePush(notification: PushNotificationSchema): Promise<void> {
+    return IntercomPlugin.receivePush(notification);
+  }
 }

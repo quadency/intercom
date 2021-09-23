@@ -186,6 +186,20 @@ public class IntercomPlugin extends Plugin {
         call.success();
     }
 
+    @PluginMethod
+    public void receivePush(PluginCall call) {
+        try {
+            JSObject data = call.getData();
+            Map message = mapFromJSON(data);
+            if (intercomPushClient.isIntercomPush(message)) {
+                intercomPushClient.handlePush(this.bridge.getActivity().getApplication(), message);
+            }
+            call.resolve();
+        } catch (Exception e) {
+            call.reject(e.getMessage());
+        }
+    }
+
     private static Map<String, Object> mapFromJSON(JSONObject jsonObject) {
         if (jsonObject == null) {
             return null;

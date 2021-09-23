@@ -49,5 +49,8 @@ export class Intercom {
     sendPushTokenToIntercom(options) {
         return IntercomPlugin.sendPushTokenToIntercom(options);
     }
+    receivePush(notification) {
+        return IntercomPlugin.receivePush(notification);
+    }
 }
 //# sourceMappingURL=plugin.js.map
