@@ -27,7 +27,7 @@ public class IntercomPlugin: CAPPlugin {
   
   @objc func registerIdentifiedUser(_ call: CAPPluginCall) {
     let userId = call.getString("userId")
-    let userEmail = call.getString("userEmail")
+    let userEmail = call.getString("email")
     
     if (userId != nil && userEmail != nil) {
       Intercom.registerUser(withUserId: userId!, email: userEmail!)
