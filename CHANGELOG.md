@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.3](https://github.com/capacitor-community/intercom/compare/v3.0.1...v3.0.3) (2022-05-10)
+
+
+### Features
+
+* **intercom:** allow sending of push token / receiving push notifs ([50299dc](https://github.com/capacitor-community/intercom/commit/50299dc6c8ea11db480d17ee1550096a6bc934a1))
+
+
+### Bug Fixes
+
+* **intercom:** fix imports ([20623c7](https://github.com/capacitor-community/intercom/commit/20623c7006098c0a1b477eafc26c3e4b04d8d64d))
+* **register user ios:** get email from correct field ([1aea48f](https://github.com/capacitor-community/intercom/commit/1aea48f901accb4fb851d24575c3ef8baf874ed7))
+* unlock capacitor version ([45f1703](https://github.com/capacitor-community/intercom/commit/45f170392d47e4f56a54b2b771620196206a49da))
+
+### [3.0.1](https://github.com/capacitor-community/intercom/compare/v3.0.0...v3.0.1) (2021-10-13)
+
+
+### Bug Fixes
+
+* remove Podfile.lock closes [#44](https://github.com/capacitor-community/intercom/issues/44) ([d2e7374](https://github.com/capacitor-community/intercom/commit/d2e737455a67efe7584dc696bc7ec172b94a74aa))
+* typo on README ([dbdc6b6](https://github.com/capacitor-community/intercom/commit/dbdc6b66b77046ddf09cc4ba8bfa6450e985d609))
+
+## [3.0.0](https://github.com/capacitor-community/intercom/compare/v2.0.1...v3.0.0) (2021-10-11)
+
+
+### Bug Fixes
+
+* android config initialization ([6d5440e](https://github.com/capacitor-community/intercom/commit/6d5440ec9e0508b0a41f54abd199bc07ab7ca54b))
+* plugin api ([bdae017](https://github.com/capacitor-community/intercom/commit/bdae017151fd5d1e203e977a56521258a02d3c81))
+* ts definitions ([7433dac](https://github.com/capacitor-community/intercom/commit/7433dacbec98819a477e3b79a026f6299f9ffd10))
+
+### [2.0.1](https://github.com/capacitor-community/intercom/compare/v2.0.0...v2.0.1) (2021-10-04)
+
+
+### Bug Fixes
+
+* displayMessageComposer can sen a message to the messenger ([54428ce](https://github.com/capacitor-community/intercom/commit/54428ce6d1a5a7dd040810b18475bd227ea420ce))
+
 ## [2.0.0](https://github.com/capacitor-community/intercom/compare/v1.1.0...v2.0.0) (2021-06-27)
 
 - update intercom dep for ios

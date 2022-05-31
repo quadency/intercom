@@ -1,13 +1,14 @@
 package com.getcapacitor.community.intercom;
 
+import com.getcapacitor.CapConfig;
+import com.getcapacitor.JSArray;
 import com.getcapacitor.JSObject;
-import com.getcapacitor.NativePlugin;
+import com.getcapacitor.Logger;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.getcapacitor.annotation.CapacitorPlugin;
+import com.getcapacitor.annotation.Permission;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,33 +17,38 @@ import java.util.List;
 import java.util.Map;
 
 import io.intercom.android.sdk.Intercom;
+import io.intercom.android.sdk.IntercomPushManager;
 import io.intercom.android.sdk.UserAttributes;
 import io.intercom.android.sdk.identity.Registration;
 import io.intercom.android.sdk.push.IntercomPushClient;
 
-@NativePlugin()
+@CapacitorPlugin(name = "Intercom", permissions = @Permission(strings = {}, alias = "receive"))
 public class IntercomPlugin extends Plugin {
-    public static final String CONFIG_KEY_PREFIX = "plugins.IntercomPlugin.android-";
     private final IntercomPushClient intercomPushClient = new IntercomPushClient();
 
-    @Override()
+    @Override
     public void load() {
-        //
-        // get config
-        String apiKey = this.bridge.getConfig().getString(CONFIG_KEY_PREFIX + "apiKey", "ADD_IN_CAPACITOR_CONFIG_JSON");
-        String appId = this.bridge.getConfig().getString(CONFIG_KEY_PREFIX + "appId", "ADD_IN_CAPACITOR_CONFIG_JSON");
+        // Set up Intercom
+        setUpIntercom();
 
-        //
-        // init intercom sdk
-        Intercom.initialize(this.getActivity().getApplication(), apiKey, appId);
-
-        //
         // load parent
         super.load();
     }
 
+    @Override
+    public void handleOnStart() {
+        super.handleOnStart();
+        bridge.getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                //We also initialize intercom here just in case it has died. If Intercom is already set up, this won't do anything.
+                setUpIntercom();
+                Intercom.client().handlePushMessage();
+            }
+        });
+    }
 
-    @PluginMethod()
+    @PluginMethod
     public void registerIdentifiedUser(PluginCall call) {
         String email = call.getString("email");
         String userId = call.getString("userId");
@@ -56,16 +62,16 @@ public class IntercomPlugin extends Plugin {
             registration = registration.withUserId(userId);
         }
         Intercom.client().registerIdentifiedUser(registration);
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void registerUnidentifiedUser(PluginCall call) {
         Intercom.client().registerUnidentifiedUser();
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void updateUser(PluginCall call) {
         UserAttributes.Builder builder = new UserAttributes.Builder();
         String userId = call.getString("userId");
@@ -91,16 +97,16 @@ public class IntercomPlugin extends Plugin {
         Map<String, Object> customAttributes = mapFromJSON(call.getObject("customAttributes"));
         builder.withCustomAttributes(customAttributes);
         Intercom.client().updateUser(builder.build());
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void logout(PluginCall call) {
         Intercom.client().logout();
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void logEvent(PluginCall call) {
         String eventName = call.getString("name");
         Map<String, Object> metaData = mapFromJSON(call.getObject("data"));
@@ -111,96 +117,122 @@ public class IntercomPlugin extends Plugin {
             Intercom.client().logEvent(eventName, metaData);
         }
 
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void displayMessenger(PluginCall call) {
         Intercom.client().displayMessenger();
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void displayMessageComposer(PluginCall call) {
-        Intercom.client().displayMessageComposer();
-        call.success();
+        String message = call.getString("message");
+        Intercom.client().displayMessageComposer(message);
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void displayHelpCenter(PluginCall call) {
         Intercom.client().displayHelpCenter();
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void hideMessenger(PluginCall call) {
-        Intercom.client().hideMessenger();
-        call.success();
+        Intercom.client().hideIntercom();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void displayLauncher(PluginCall call) {
         Intercom.client().setLauncherVisibility(Intercom.VISIBLE);
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void hideLauncher(PluginCall call) {
         Intercom.client().setLauncherVisibility(Intercom.GONE);
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void displayInAppMessages(PluginCall call) {
         Intercom.client().setInAppMessageVisibility(Intercom.VISIBLE);
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void hideInAppMessages(PluginCall call) {
         Intercom.client().setLauncherVisibility(Intercom.GONE);
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
+    public void displayCarousel(PluginCall call) {
+        String carouselId = call.getString("carouselId");
+        Intercom.client().displayCarousel(carouselId);
+        call.resolve();
+    }
+
+    @PluginMethod
     public void setUserHash(PluginCall call) {
         String hmac = call.getString("hmac");
         Intercom.client().setUserHash(hmac);
-        call.success();
+        call.resolve();
     }
 
-    @PluginMethod()
+    @PluginMethod
     public void setBottomPadding(PluginCall call) {
         String stringValue = call.getString("value");
         int value = Integer.parseInt(stringValue);
         Intercom.client().setBottomPadding(value);
-        call.success();
+        call.resolve();
     }
 
     @PluginMethod
     public void sendPushTokenToIntercom(PluginCall call) {
         String token = call.getString("value");
-        intercomPushClient.sendTokenToIntercom(this.bridge.getActivity().getApplication(), token);
-        JSObject ret = new JSObject();
-        ret.put("token", token);
-        call.success();
+        try {
+            intercomPushClient.sendTokenToIntercom(this.getActivity().getApplication(), token);
+            call.resolve();
+        } catch (Exception e) {
+            call.reject("Failed to send push token to Intercom", e);
+        }
     }
 
     @PluginMethod
     public void receivePush(PluginCall call) {
         try {
-            JSObject data = call.getData();
-            Map message = mapFromJSON(data);
+            JSObject notificationData = call.getData();
+            Map message = mapFromJSON(notificationData);
             if (intercomPushClient.isIntercomPush(message)) {
-                intercomPushClient.handlePush(this.bridge.getActivity().getApplication(), message);
+                intercomPushClient.handlePush(this.getActivity().getApplication(), message);
+                call.resolve();
+            } else {
+                call.reject("Notification data was not a valid Intercom push message");
             }
-            call.resolve();
         } catch (Exception e) {
-            call.reject(e.getMessage());
+            call.reject("Failed to handle received Intercom push", e);
         }
     }
 
-    private static Map<String, Object> mapFromJSON(JSONObject jsonObject) {
+    private void setUpIntercom() {
+        try {
+            // get config
+            CapConfig config = this.bridge.getConfig();
+            String apiKey = config.getPluginConfiguration("Intercom").getString("androidApiKey");
+            String appId = config.getPluginConfiguration("Intercom").getString("androidAppId");
+
+            // init intercom sdk
+            Intercom.initialize(this.getActivity().getApplication(), apiKey, appId);
+        } catch (Exception e) {
+            Logger.error("Intercom", "ERROR: Something went wrong when initializing Intercom. Check your configurations", e);
+        }
+    }
+
+    private static Map<String, Object> mapFromJSON(JSObject jsonObject) {
         if (jsonObject == null) {
             return null;
         }
@@ -217,15 +249,15 @@ public class IntercomPlugin extends Plugin {
     }
 
     private static Object getObject(Object value) {
-        if (value instanceof JSONObject) {
-            value = mapFromJSON((JSONObject) value);
-        } else if (value instanceof JSONArray) {
-            value = listFromJSON((JSONArray) value);
+        if (value instanceof JSObject) {
+            value = mapFromJSON((JSObject) value);
+        } else if (value instanceof JSArray) {
+            value = listFromJSON((JSArray) value);
         }
         return value;
     }
 
-    private static List<Object> listFromJSON(JSONArray jsonArray) {
+    private static List<Object> listFromJSON(JSArray jsonArray) {
         List<Object> list = new ArrayList<>();
         for (int i = 0, count = jsonArray.length(); i < count; i++) {
             Object value = getObject(jsonArray.opt(i));
