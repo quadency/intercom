@@ -1,5 +1,8 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { WebPlugin } from '@capacitor/core';
-import { IntercomPlugin, IntercomPushNotificationData, IntercomUserUpdateOptions } from './definitions';
+
+import type { IntercomPlugin, IntercomPushNotificationData, IntercomUserUpdateOptions } from './definitions';
+
 export class IntercomWeb extends WebPlugin implements IntercomPlugin {
   constructor() {
     super({
